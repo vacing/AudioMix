@@ -1,6 +1,7 @@
-#include<stdio.h>
-#include<math.h>
+#include<cstdio>
+#include<cmath>
 #include<vector>
+
 using namespace std;
 int g_SampleRate = 44100;
 int g_channels = 2;
@@ -11,9 +12,9 @@ int g_channels = 2;
 
 typedef struct STR_WEBRTC
 {
-	int iEnergy;//ÄÜÁ¿Öµ
-	bool bMix;//ÊÇ·ñ½øĞĞmix
-	short *Data;//ÕæÊµÊı¾İ
+	int iEnergy;//èƒ½é‡å€¼
+	bool bMix;//æ˜¯å¦è¿›è¡Œmix
+	short *Data;//çœŸå®æ•°æ®
 
 }STR_WEBRTC;
 
@@ -46,8 +47,8 @@ const float rampArray[] = {
 
 void pcm_mix_webrtc_update(STR_WEBRTC &p,int T)
 {
-	//»ñÈ¡ÄÜÁ¿×î´óµÄÈıÂ·
-	//ÅĞ¶ÏÄÜÁ¿×î´óµÄÈıÂ·ÊÇ·ñĞèÒª½øĞĞRampIn
+	//è·å–èƒ½é‡æœ€å¤§çš„ä¸‰è·¯
+	//åˆ¤æ–­èƒ½é‡æœ€å¤§çš„ä¸‰è·¯æ˜¯å¦éœ€è¦è¿›è¡ŒRampIn
 
 	if (p.bMix == false)
 	{
@@ -87,7 +88,7 @@ void pcm_mix_webrtc_update(STR_WEBRTC &p,int T)
 	{
 		g_mixList.push_back(p);
 	}
-	
+
 }
 void pcm_mix_webrtc_list(short *bufMix,int T)
 {
@@ -104,7 +105,7 @@ void pcm_mix_webrtc_list(short *bufMix,int T)
 			iT = g_mixList.at(0).Data[i] + g_mixList.at(1).Data[i] + g_mixList.at(2).Data[i];
 			iT /= 2;
 		}
-		
+
 		if (iT > DEF_MAX)
 		{
 			printf("pcm_mix_webrtc_list DEF_MAX\n");
@@ -119,7 +120,7 @@ void pcm_mix_webrtc_list(short *bufMix,int T)
 		bufMix[i] = iT;
 	}
 }
-//ÀûÓÃwebRtcÔ­ÀíÊµÏÖmix
+//åˆ©ç”¨webRtcåŸç†å®ç°mix
 void  pcm_mix_webrtc(short *bufMix,STR_WEBRTC &p1, STR_WEBRTC &p2, STR_WEBRTC &p3, STR_WEBRTC &p4,int T)
 {
 	g_mixList.clear();
@@ -177,7 +178,7 @@ void pcm_mix_auto_newlc(short *bufMix,short *buf,short *buf2,int T)
 	for (int i = 0; i < T; i++)
 	{
 		int iT = 0;
-		
+
 		if (buf[i] < 0 && buf2[i] < 0)
 		{
 			iT = buf[i] * buf2[i] / -(pow(2, 16 - 1) - 1);
@@ -201,9 +202,9 @@ void pcm_mix_auto_newlc(short *bufMix,short *buf,short *buf2,int T)
 	}
 }
 
-//×Ô¶¯¶ÔÆëËã·¨,ÒÔ×ÔÉíµÄ±ÈÀıÎªÈ¨ÖØ.
-//aµÄÈ¨ÖØÎªa/(a+b+c),bµÄÈ¨ÖØÎªb/(a+b+c)£¬Ôò×îÖÕaµÄÈ¨ÖØ³ËÒÔaµÄÖµ£¬¼ÓÉÏbµÄÈ¨ÖØ³ËÒÔbµÄÖµ.
-//(a*|a| + |b|*b + |c|*c)/(|a|+|b|+|c|)¸Ã·½·¨µ¼ÖÂ¸ßÆµÊı¾İËğÊ§
+//è‡ªåŠ¨å¯¹é½ç®—æ³•,ä»¥è‡ªèº«çš„æ¯”ä¾‹ä¸ºæƒé‡.
+//açš„æƒé‡ä¸ºa/(a+b+c),bçš„æƒé‡ä¸ºb/(a+b+c)ï¼Œåˆ™æœ€ç»ˆaçš„æƒé‡ä¹˜ä»¥açš„å€¼ï¼ŒåŠ ä¸Šbçš„æƒé‡ä¹˜ä»¥bçš„å€¼.
+//(a*|a| + |b|*b + |c|*c)/(|a|+|b|+|c|)è¯¥æ–¹æ³•å¯¼è‡´é«˜é¢‘æ•°æ®æŸå¤±
 int get_mix_auto_align_sgn(short p)
 {
 	int isgn = 0;
@@ -224,14 +225,15 @@ int get_mix_auto_align_sgn(short p)
 
 	return isgn * ibuf;
 }
+
 void pcm_mix_auto_align(short *bufMix,short *buf,short *buf2,int T)
 {
-	
+
 	for (int i = 0; i < T; i++)
 	{
 		//int ibuf = get_mix_auto_align_sgn(buf[i]);
 		//int ibuf2 = get_mix_auto_align_sgn(buf2[i]);
-		
+
 		if (buf[i]==0 && buf2[i] == 0)
 		{
 			bufMix[i] = 0;
@@ -239,7 +241,7 @@ void pcm_mix_auto_align(short *bufMix,short *buf,short *buf2,int T)
 		}
 
 		int iT = (abs(buf[i])*buf[i] +abs(buf2[i])*buf2[i]) / (abs(buf[i]) + abs(buf2[i]));
-		
+
 		if (iT > DEF_MAX)
 		{
 			printf("pcm_mix_auto_align DEF_MAX\n");
@@ -251,10 +253,10 @@ void pcm_mix_auto_align(short *bufMix,short *buf,short *buf2,int T)
 
 		bufMix[i] = iT;
 	}
-	
+
 }
 
-//ÏßĞÔµş¼ÓÇóÆ½¾ù.²»»á²úÉúÒç³ö£¬ÔëÒô½ÏĞ¡¡£µ«ÊÇË¥¼õ¹ı´ó£¬Ó°ÏìÍ¨»°ÖÊÁ¿¡£
+//çº¿æ€§å åŠ æ±‚å¹³å‡.ä¸ä¼šäº§ç”Ÿæº¢å‡ºï¼Œå™ªéŸ³è¾ƒå°ã€‚ä½†æ˜¯è¡°å‡è¿‡å¤§ï¼Œå½±å“é€šè¯è´¨é‡ã€‚
 void pcm_mix_avg(short *bufMix,short *buf,short *buf2 ,int T)
 {
 	for (int i = 0; i < T; i++)
@@ -262,7 +264,7 @@ void pcm_mix_avg(short *bufMix,short *buf,short *buf2 ,int T)
 		int iT = buf[i] + buf2[i];
 
 		bufMix[i] = (short)(iT / 2);
-		
+
 		if (bufMix[i] > DEF_MAX)
 		{
 			bufMix[i] = DEF_MAX;
@@ -275,9 +277,10 @@ void pcm_mix_avg(short *bufMix,short *buf,short *buf2 ,int T)
 		}
 	}
 }
-//×ÔÊÊÓ¦»ìÒô¼ÓÈ¨,Ê¹ÓÃ¿É±äµÄË¥¼õÒò×Ó¶ÔÓïÒô½øĞĞË¥¼õ£¬¸ÃË¥¼õÒò×Ó´ú±íÁËÓïÒôµÄÈ¨ÖØ£¬
-//Ë¥¼õÒò×ÓËæ×ÅÒôÆµÊı¾İµÄ±ä»¯¶ø±ä»¯£¬µ±Òç³öÊ±£¬Ë¥¼õÒò×Ó±äĞ¡£¬Ê¹µÃºóĞøµÄÊı¾İÔÚË¥¼õºó´¦ÓÚÁÙ½çÖµÒÔÄÚ,
-//Ã»ÓĞÒç³öÊ±£¬ÓÖÈÃË¥¼õÒò×ÓÂıÂıÔö´ó£¬ÊÇÊı¾İ½ÏÎªÆ½»ºµÄ±ä»¯.
+
+//è‡ªé€‚åº”æ··éŸ³åŠ æƒ,ä½¿ç”¨å¯å˜çš„è¡°å‡å› å­å¯¹è¯­éŸ³è¿›è¡Œè¡°å‡ï¼Œè¯¥è¡°å‡å› å­ä»£è¡¨äº†è¯­éŸ³çš„æƒé‡ï¼Œ
+//è¡°å‡å› å­éšç€éŸ³é¢‘æ•°æ®çš„å˜åŒ–è€Œå˜åŒ–ï¼Œå½“æº¢å‡ºæ—¶ï¼Œè¡°å‡å› å­å˜å°ï¼Œä½¿å¾—åç»­çš„æ•°æ®åœ¨è¡°å‡åå¤„äºä¸´ç•Œå€¼ä»¥å†…,
+//æ²¡æœ‰æº¢å‡ºæ—¶ï¼Œåˆè®©è¡°å‡å› å­æ…¢æ…¢å¢å¤§ï¼Œæ˜¯æ•°æ®è¾ƒä¸ºå¹³ç¼“çš„å˜åŒ–.
 void pcm_mix_Normalization(short *bufMix, short *buf, short *buf2, int T)
 {
 	double f = 1;
@@ -287,11 +290,11 @@ void pcm_mix_Normalization(short *bufMix, short *buf, short *buf2, int T)
 	{
 
 		int iT = buf[i] + buf2[i];
-		
+
 		ioutput = iT * f;
 
 		if (ioutput > DEF_MAX)
-		{			
+		{
 			f = (double)DEF_MAX / (double)(ioutput);
 			ioutput = DEF_MAX;
 
@@ -317,33 +320,31 @@ void pcm_mix_Normalization(short *bufMix, short *buf, short *buf2, int T)
 //
 int main(int argc, char *argv[])
 {
-	FILE *pPcm1 = nullptr, *pPcm2 = nullptr,*pPcm3 = nullptr,*pPcm4 = nullptr,*pPcmMix = nullptr;
-
-	errno_t er = fopen_s(&pPcm1,"../Pcm/1.pcm","rb+");
-	if (er != 0)
+	FILE *pPcm1 = fopen("../Pcm/1.pcm","rb+");
+	if (!pPcm1)
 	{
 		printf("");
 	}
-	er = fopen_s(&pPcm2,"../Pcm/2.pcm","rb+");
-	if (er != 0)
-	{
-		printf("");
-	}
-
-	er = fopen_s(&pPcm3,"../Pcm/3.pcm","rb+");
-	if(er != 0)
+	FILE *pPcm2 = fopen("../Pcm/2.pcm","rb+");
+	if (!pPcm2)
 	{
 		printf("");
 	}
 
-	er = fopen_s(&pPcm4, "../Pcm/4.pcm", "rb+");
-	if (er = 0)
+	FILE *pPcm3 = fopen("../Pcm/3.pcm","rb+");
+	if(!pPcm3)
 	{
 		printf("");
 	}
 
-	er = fopen_s(&pPcmMix, "Mix.pcm", "wb+");
-	if (er != 0)
+	FILE *pPcm4 = fopen("../Pcm/4.pcm", "rb+");
+	if (!pPcm4)
+	{
+		printf("");
+	}
+
+	FILE *pPcmMix = fopen("Mix.pcm", "wb+");
+	if (!pPcmMix)
 	{
 		printf("");
 	}
@@ -364,12 +365,12 @@ int main(int argc, char *argv[])
 
 	while (ir1 > 0 && ir2 > 0 && ir3 > 0 && ir4 > 0 )
 	{
-		
+
 		//pcm_mix_avg(buf3, buf, buf2, 1024);
 		//pcm_mix_Normalization(buf3,buf,buf2,1024);
 		//pcm_mix_auto_align(buf3,buf,buf2,1024);
 		//pcm_mix_auto_newlc(buf3, buf, buf2, 1024);
-		
+
 		pcm_mix_webrtc(bufMix, s1, s2, s3, s4,1920);
 
 		fwrite(bufMix, 2, 1920, pPcmMix);
@@ -385,7 +386,7 @@ int main(int argc, char *argv[])
 	fclose(pPcm3);
 	fclose(pPcm4);
 	fclose(pPcmMix);
-	
+
 	printf("end.\n");
 
 	for (;;);
